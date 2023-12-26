@@ -7,7 +7,6 @@ from .ports.users_setuppers import UsersSetupperPort
 from .ports.rulers import RulerPort
 from .ports.boxes import BoxPortType, BaseBoxPort, RentOnlyBoxPort
 from .utils.boxes import get_properties_value
-from .actions import Actions
 
 
 @dataclass
@@ -81,7 +80,8 @@ class Monopoly:
 
     def user_round(self, user: UserPort):
         self.start_user_round(user=user)
-        Actions.choose_action(user=user)
+        action = user.ask_user_what_to_do()
+        action.value.excecution(user)
         new_index = self.scoreboard.get_new_index(
             user=user, initial_position=user.position
         )
@@ -100,6 +100,7 @@ class Monopoly:
     def play(self):
         while self.game_condition:
             self.start_round()
+            self.round()
             self.end_round()
 
     def end(self):
@@ -116,5 +117,6 @@ def game(
     setupper: UsersSetupperPort, scoreboard: ScoreBoardPort, ruler: RulerPort
 ):
     game = Monopoly(setupper=setupper, scoreboard=scoreboard, ruler=ruler)
+    game.initialize()
     game.play()
     game.end()

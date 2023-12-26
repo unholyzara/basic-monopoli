@@ -44,7 +44,7 @@ class ScoreBoardPort(abc.ABC):
         movement = self.get_movement()
         initial_index = self.boxes.index(initial_position)
         new_index = initial_index + movement
-        if new_index > self.n_boxes:
+        if new_index >= self.n_boxes:
             first_chunk_boxes = self.boxes[initial_index:]
             for box in first_chunk_boxes:
                 box.movement_step_on(user=user)

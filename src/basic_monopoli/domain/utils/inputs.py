@@ -22,7 +22,7 @@ def get_yes_no_inpout(label: str) -> bool:
 
 def get_int_input(label: str) -> int:
     try:
-        users_number = int(input("How many users?"))
+        users_number = int(input(label))
     except ValueError:
         print("Enter a correct number")
         return get_int_input(label=label)
