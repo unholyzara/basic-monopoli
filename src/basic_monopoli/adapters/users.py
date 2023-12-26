@@ -10,12 +10,10 @@ from basic_monopoli.domain.models.buildings import Building
 from basic_monopoli.domain.utils.inputs import select_properties
 from basic_monopoli.domain.ports.users import UserPort
 from basic_monopoli.domain.ports.boxes import BoxPortType, PropertyBoxPort
-from basic_monopoli.domain.ports.scoreboards import ScoreBoardPort
 
 
 @dataclass
 class BaseUser(UserPort):
-    scoreboard: ScoreBoardPort
     money: float
     position: BoxPortType
 
@@ -26,18 +24,12 @@ class BaseUser(UserPort):
         self.user_number = HumanUser.users
 
     def __str__(self):
-        properties = self.get_properties()
         label_ls = [
             f"Name: {self.name}",
             f"Money: {self.money}",
-            f"Properties: {len(properties)}",
         ]
         label = " | ".join(label_ls)
-        properties_str_ls: list[str] = []
-        for index, box in enumerate(properties, start=1):
-            properties_str_ls.append(f"{index} | {box}")
-        properties_str = "\n".join(properties_str_ls)
-        return label + properties_str
+        return label
 
     def __eq__(self, other: Any):
         if not isinstance(other, BaseUser):

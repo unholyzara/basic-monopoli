@@ -19,7 +19,9 @@ class Monopoly:
         self.round_number = 1
         self.game_toggle = False
         self.ranking: list[tuple[UserPort, int | None]] = []
-        self.in_game_users = deepcopy(self.setupper.users)
+        self.in_game_users = deepcopy(
+            self.setupper.get_users(scoreboard=self.scoreboard)
+        )
 
     @property
     def game_condition(self):
@@ -56,7 +58,7 @@ class Monopoly:
         self, position: RentOnlyBoxPort, user: UserPort
     ):
         print("Ops! You don't have enough money!")
-        user_properties = user.get_properties()
+        user_properties = user.get_properties(scoreboard=self.scoreboard)
         user_properties_values = get_properties_value(
             properties=user_properties
         )
@@ -64,7 +66,9 @@ class Monopoly:
         if len(user_properties) and user_properties_values > rent:
             while user.money < rent:
                 user.sell_selected_properties(properties=user_properties)
-                user_properties = user.get_properties()
+                user_properties = user.get_properties(
+                    scoreboard=self.scoreboard
+                )
             user.pay_rent(box=position)
         else:
             self.user_game_over(user=user, position=position)
@@ -81,7 +85,12 @@ class Monopoly:
     def user_round(self, user: UserPort):
         self.start_user_round(user=user)
         action = user.ask_user_what_to_do()
-        action.value.excecution(user)
+        result = action.value.excecution(self.scoreboard, user)
+        while result is False:
+            action = user.ask_user_what_to_do()
+            result = action.value.excecution(self.scoreboard, user)
+        if result is None:
+            return False
         new_index = self.scoreboard.get_new_index(
             user=user, initial_position=user.position
         )
@@ -89,10 +98,19 @@ class Monopoly:
         print("New Position!")
         print(str(new_position))
         self.step_on_box(user=user, position=new_position)
+        return True
+
+    def end_user_round(self):
+        print("=============================================")
+        print("=============================================")
 
     def round(self):
         for user in self.in_game_users:
-            self.user_round(user=user)
+            keep_going = self.user_round(user=user)
+            if not keep_going:
+                self.game_toggle = False
+                return False
+        return True
 
     def end_round(self):
         self.round_number += 1
@@ -109,7 +127,9 @@ class Monopoly:
         print("Ranking:")
         for index, (user, rounds) in enumerate(ranking, start=1):
             rounds_label = str(rounds) if rounds else "WINNER"
-            print(f"{index}: {user.name} {rounds_label}")
+            print(
+                f"{index}: {user.name} Rounds: {rounds_label} Loops: {user.loop}"
+            )
         print("Thanks for playing")
 
 

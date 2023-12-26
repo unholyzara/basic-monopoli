@@ -7,39 +7,47 @@ from .utils.inputs import select_property, get_int_input
 
 if TYPE_CHECKING:
     from .ports.users import UserPort
+    from .ports.scoreboards import ScoreBoardPort
 
 
 @dataclass
 class Action:
     label: str
-    excecution: Callable[["UserPort"], bool]
+    excecution: Callable[["ScoreBoardPort", "UserPort"], bool | None]
 
 
-def show_finance_execution(user: "UserPort"):
+def show_finance_execution(scoreboard: "ScoreBoardPort", user: "UserPort"):
     print(f"User : {user.name}")
     print(f"Money: {display_money(money=user.money)}")
-    user_properties = user.get_properties()
+    user_properties = user.get_properties(scoreboard=scoreboard)
     print(f"Number of Properties: {len(user_properties)}")
     return False
 
 
-def show_properties_execution(user: "UserPort"):
+def show_properties_execution(scoreboard: "ScoreBoardPort", user: "UserPort"):
     print(f"Properties of User : {user.name}")
-    user_properties = user.get_properties()
+    user_properties = user.get_properties(scoreboard=scoreboard)
     display_properties(properties=user_properties)
     return False
 
 
-def show_propertu_details_execution(user: "UserPort"):
-    selected_property = select_property(properties=user.get_properties())
+def show_propertu_details_execution(
+    scoreboard: "ScoreBoardPort", user: "UserPort"
+):
+    selected_property = select_property(
+        properties=user.get_properties(scoreboard=scoreboard)
+    )
     print(f"Property selected : {selected_property.name}")
     print(str(select_property))
     return False
 
 
-def go_on_execution(user: "UserPort"):
-    print("Throwing dice...")
+def go_on_execution(scoreboard: "ScoreBoardPort", user: "UserPort"):
     return True
+
+
+def end_game_execution(scoreboard: "ScoreBoardPort", user: "UserPort"):
+    return None
 
 
 class Actions(Enum):
@@ -53,11 +61,15 @@ class Actions(Enum):
     )
     PROPERTY_DETAIL = Action(
         label="Show property details",
-        excecution=show_properties_execution,
+        excecution=show_propertu_details_execution,
     )
     GO_ON = Action(
         label="Resume Round",
         excecution=go_on_execution,
+    )
+    END = Action(
+        label="End Game",
+        excecution=end_game_execution,
     )
 
     @classmethod
@@ -67,7 +79,7 @@ class Actions(Enum):
             print(f"{index}) {action.value.label}")
         result = get_int_input(label="Action number: ")
         try:
-            selected_action = list(cls)[result]
+            selected_action = list(cls)[result - 1]
         except IndexError:
             print("Enter a valid action number")
             return cls.choose_action(user=user)

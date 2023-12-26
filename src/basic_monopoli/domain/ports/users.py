@@ -16,6 +16,7 @@ class UserPort(abc.ABC):
     scoreboard: "ScoreBoardPort"
     money: float
     position: BoxPortType
+    loop: int = 0
 
     class CantAffordException(Exception):
         pass
@@ -76,9 +77,11 @@ class UserPort(abc.ABC):
     def ask_user_what_to_do(self) -> Actions:
         pass
 
-    def get_properties(self) -> list[PropertyBoxPort]:
+    def get_properties(
+        self, scoreboard: "ScoreBoardPort"
+    ) -> list[PropertyBoxPort]:
         return list(
-            filter(lambda box: box.owner == self, self.scoreboard.boxes)  # type: ignore
+            filter(lambda box: box.owner == self, scoreboard.boxes)  # type: ignore
         )
 
     def recieve_money(

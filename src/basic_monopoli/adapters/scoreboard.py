@@ -100,8 +100,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Vicolo Corto",
-            base_rent=50,
-            base_price=100,
+            base_rent=70,
+            base_price=60,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -111,8 +111,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Vicolo Stetto",
-            base_rent=60,
-            base_price=110,
+            base_rent=70,
+            base_price=60,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -120,7 +120,7 @@ class StandardScoreBoard(SimpleScoreBoard):
         )
         yield RentOnlyBox(
             name="Tassa patrimoniale",
-            base_rent=self.ruler.get_loop_reward(),
+            base_rent=self.ruler.get_loop_reward() / 2,
             scoreboard=self,
             ruler=self.ruler,
         )
@@ -130,7 +130,7 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Bastioni Gran Sasso",
-            base_rent=50,
+            base_rent=80,
             base_price=100,
             house_price=50,
             hotel_price=75,
@@ -141,8 +141,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Viale Monterosa",
-            base_rent=60,
-            base_price=110,
+            base_rent=80,
+            base_price=100,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -151,7 +151,7 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Viale Vesuvio",
-            base_rent=60,
+            base_rent=120,
             base_price=110,
             house_price=50,
             hotel_price=75,
@@ -164,8 +164,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Via Accademia",
-            base_rent=50,
-            base_price=100,
+            base_rent=110,
+            base_price=140,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -175,8 +175,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Corso Ateneo",
-            base_rent=60,
-            base_price=110,
+            base_rent=110,
+            base_price=140,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -185,7 +185,7 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Piazza università",
-            base_rent=60,
+            base_rent=160,
             base_price=110,
             house_price=50,
             hotel_price=75,
@@ -198,8 +198,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Via Verdi",
-            base_rent=50,
-            base_price=100,
+            base_rent=140,
+            base_price=180,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -209,8 +209,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Corso Raffaello",
-            base_rent=60,
-            base_price=110,
+            base_rent=140,
+            base_price=180,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -219,8 +219,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Piazza Dante",
-            base_rent=60,
-            base_price=110,
+            base_rent=160,
+            base_price=200,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -232,8 +232,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Via Marco Polo",
-            base_rent=50,
-            base_price=100,
+            base_rent=170,
+            base_price=220,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -243,8 +243,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Corso Magellano",
-            base_rent=60,
-            base_price=110,
+            base_rent=170,
+            base_price=220,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -253,8 +253,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Largo Colombo",
-            base_rent=60,
-            base_price=110,
+            base_rent=190,
+            base_price=240,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -266,8 +266,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Viale Costantino",
-            base_rent=50,
-            base_price=100,
+            base_rent=200,
+            base_price=260,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -276,8 +276,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Viale Traiano",
-            base_rent=60,
-            base_price=110,
+            base_rent=200,
+            base_price=260,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -287,8 +287,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Piazza Giulio Cesare",
-            base_rent=60,
-            base_price=110,
+            base_rent=220,
+            base_price=280,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -300,8 +300,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Via Roma",
-            base_rent=50,
-            base_price=100,
+            base_rent=230,
+            base_price=300,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -310,8 +310,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Corso Impero",
-            base_rent=60,
-            base_price=110,
+            base_rent=230,
+            base_price=300,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -321,8 +321,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Largo Augusto",
-            base_rent=60,
-            base_price=110,
+            base_rent=250,
+            base_price=320,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -335,8 +335,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="£Viale dei Giardini",
-            base_rent=50,
-            base_price=100,
+            base_rent=270,
+            base_price=350,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -351,8 +351,8 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield PropertyBox(
             group=group,
             name="Parco della Vittoria",
-            base_rent=60,
-            base_price=110,
+            base_rent=300,
+            base_price=400,
             house_price=50,
             hotel_price=75,
             scoreboard=self,
@@ -387,4 +387,4 @@ class StandardScoreBoard(SimpleScoreBoard):
         yield StepOnlyBox(name="Parcheggio", scoreboard=self, ruler=self.ruler)
         yield from self.get_north_side()
         yield PrisonBox(scoreboard=self, ruler=self.ruler)
-        yield from self.get_purple_group()
+        yield from self.get_east_side()
