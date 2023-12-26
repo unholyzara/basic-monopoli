@@ -4,6 +4,7 @@ from functools import cached_property
 from dataclasses import dataclass
 from typing import ClassVar, Any
 
+from basic_monopoli.domain.actions import Actions
 from basic_monopoli.domain.utils.inputs import get_yes_no_inpout
 from basic_monopoli.domain.models.buildings import Building
 from basic_monopoli.domain.utils.inputs import select_properties
@@ -89,6 +90,9 @@ class HumanUser(BaseUser):
             message="Select properties to sell (1,2,3,...): ",
         )
 
+    def ask_user_what_to_do(self) -> Actions:
+        return Actions.choose_action(user=self)
+
 
 class PcUser(BaseUser):
     def get_name(self):
@@ -107,3 +111,6 @@ class PcUser(BaseUser):
 
     def get_which_properties_to_sell(self, properties: list[PropertyBoxPort]):
         return [properties[0]]
+
+    def ask_user_what_to_do(self) -> Actions:
+        return Actions.GO_ON

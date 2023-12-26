@@ -2,6 +2,7 @@ import time, abc
 
 from typing import Optional, Any, TYPE_CHECKING
 
+from ..actions import Actions
 from ..models.buildings import Building
 from ..utils.boxes import get_properties_value
 from ..utils.displays import display_properties
@@ -71,6 +72,10 @@ class UserPort(abc.ABC):
     ) -> list[PropertyBoxPort]:
         pass
 
+    @abc.abstractmethod
+    def ask_user_what_to_do(self) -> Actions:
+        pass
+
     def get_properties(self) -> list[PropertyBoxPort]:
         return list(
             filter(lambda box: box.owner == self, self.scoreboard.boxes)  # type: ignore
@@ -106,7 +111,7 @@ class UserPort(abc.ABC):
             print(message)
 
     def pay_rent(self, box: RentOnlyBoxPort):
-        if not box.owner:
+        if isinstance(box, PropertyBoxPort) and not box.owner:
             raise self.PropertyNotOwnedException()
         if box.owner == self:
             raise self.NoRentNeededException()
@@ -116,7 +121,11 @@ class UserPort(abc.ABC):
         except self.CantAffordException:
             raise self.CantAffordRentException()
         else:
-            print(f"{self.name} paid rent for {box.name} to {box.owner.name}")
+            if box.owner:
+                owner_str = box.owner.name
+            else:
+                owner_str = "the Bank"
+            print(f"{self.name} paid rent for {box.name} to {owner_str}")
 
     def buy_property(self, box: PropertyBoxPort):
         if box.owner:
