@@ -1,5 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
+from typing import Literal
 
 from basic_monopoli.domain.models.groups import PropertyBoxGroup
 from basic_monopoli.domain.ports.users import UserPort
@@ -30,12 +31,24 @@ class StepOnlyBox(BaseBoxPort):
 
 @dataclass
 class ChanceBox(BaseBoxPort):
+    name: str = "Imprevisiti"
+
     def step_on(self, user: UserPort):
         pass
 
 
 @dataclass
 class ProbabilityBox(BaseBoxPort):
+    name: str = "Probabilità"
+
+    def step_on(self, user: UserPort):
+        pass
+
+
+@dataclass
+class PrisonBox(BaseBoxPort):
+    name: str = "Prigione"
+
     def step_on(self, user: UserPort):
         pass
 
@@ -95,16 +108,20 @@ class PropertyBox(PropertyBoxPort):
     hotel_price: float
 
     @property
-    def group_owned(self):
+    def same_group_owned(self):
+        same_owner_group_boxes = list(
+            filter(lambda box: box.owner == self.owner, self.scoreboard.boxes)
+        )
+        return same_owner_group_boxes
+
+    @property
+    def group_is_owned(self):
         same_group_boxes = list(
             filter(lambda box: box.group == self.group, self.scoreboard.boxes)
         )
         if not same_group_boxes:
             return False
-        same_owner_group_boxes = list(
-            filter(lambda box: box.owner == self.owner, self.scoreboard.boxes)
-        )
-        return len(same_owner_group_boxes) == len(same_group_boxes)
+        return len(self.same_group_owned) == len(same_group_boxes)
 
     def get_price(self) -> float:
         return self.base_price
@@ -112,6 +129,22 @@ class PropertyBox(PropertyBoxPort):
     def get_rent(self) -> float:
         rent = self.base_rent
         if self.owner is not None:
-            if self.group_owned:
+            if self.group_is_owned:
                 rent *= self.ruler.get_group_owned_multiplier()
         return rent
+
+
+class MultipliedPropertyBox(PropertyBox):
+    def get_rent(self) -> float:
+        if self.owner:
+            base_rent = self.base_rent
+            return base_rent * len(self.same_group_owned)
+        else:
+            return 0.0
+
+
+class StationBox(MultipliedPropertyBox):
+    name: Literal["Nord", "Sud", "Est", "Oves"]
+
+    def __post_init__(self):
+        self.name = "Stazione " + self.name  # type: ignore

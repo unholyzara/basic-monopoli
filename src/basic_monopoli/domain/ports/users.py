@@ -1,16 +1,18 @@
 import time, abc
 
-from typing import Optional, Any
+from typing import Optional, Any, TYPE_CHECKING
 
 from ..models.buildings import Building
 from ..utils.boxes import get_properties_value
 from ..utils.displays import display_properties
-from .scoreboards import ScoreBoardPort
-from .boxes import PropertyBoxPort, BoxPortType
+from .boxes import PropertyBoxPort, BoxPortType, RentOnlyBoxPort
+
+if TYPE_CHECKING:
+    from .scoreboards import ScoreBoardPort
 
 
 class UserPort(abc.ABC):
-    scoreboard: ScoreBoardPort
+    scoreboard: "ScoreBoardPort"
     money: float
     position: BoxPortType
 
@@ -103,7 +105,7 @@ class UserPort(abc.ABC):
         if not silently:
             print(message)
 
-    def pay_rent(self, box: PropertyBoxPort):
+    def pay_rent(self, box: RentOnlyBoxPort):
         if not box.owner:
             raise self.PropertyNotOwnedException()
         if box.owner == self:

@@ -1,6 +1,8 @@
 from functools import reduce
+from typing import TYPE_CHECKING
 
-from ..ports.boxes import PropertyBoxPort
+if TYPE_CHECKING:
+    from basic_monopoli.domain.ports.boxes import PropertyBoxPort
 
 
 def get_properties_value(properties: list["PropertyBoxPort"]):

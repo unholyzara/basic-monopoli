@@ -42,12 +42,16 @@ class ScoreBoardPort(abc.ABC):
 
     def get_new_index(self, user: UserPort, initial_position: BoxPortType):
         movement = self.get_movement()
-        new_index = initial_position.index + movement
+        initial_index = self.boxes.index(initial_position)
+        new_index = initial_index + movement
         if new_index > self.n_boxes:
-            self.loop_completed(user=user)
+            first_chunk_boxes = self.boxes[initial_index:]
+            for box in first_chunk_boxes:
+                box.movement_step_on(user=user)
             new_index = new_index - self.n_boxes
-        else:
-            return new_index
+        for box in self.boxes[0 : new_index + 1]:
+            box.movement_step_on(user=user)
+        return new_index
 
     def get_new_position(self, new_index: int):
-        return next(filter(lambda box: box.index == new_index, self.boxes))
+        return self.boxes[new_index]

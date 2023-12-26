@@ -5,8 +5,9 @@ from .ports.users import UserPort
 from .ports.scoreboards import ScoreBoardPort
 from .ports.users_setuppers import UsersSetupperPort
 from .ports.rulers import RulerPort
-from .ports.boxes import BaseBoxPort, PropertyBoxPort
+from .ports.boxes import BoxPortType, BaseBoxPort, RentOnlyBoxPort
 from .utils.boxes import get_properties_value
+from .actions import Actions
 
 
 @dataclass
@@ -25,6 +26,16 @@ class Monopoly:
     def game_condition(self):
         return self.game_toggle and len(self.in_game_users) > 1
 
+    def initialize(self):
+        self.game_toggle = True
+
+    def start_round(self):
+        print(f"Start Round {self.round_number}")
+
+    def start_user_round(self, user: UserPort):
+        print(f"User: {user.name}")
+        print(str(user))
+
     def remove_user(self, user: UserPort):
         self.in_game_users.remove(user)
         n_users = len(self.in_game_users)
@@ -42,55 +53,42 @@ class Monopoly:
             print(f"User {user.name} gived all the money to {owner.get_name()}")
         self.remove_user(user=user)
 
-    def start(self):
-        self.game_toggle = True
+    def handle_user_cant_afford_rent(
+        self, position: RentOnlyBoxPort, user: UserPort
+    ):
+        print("Ops! You don't have enough money!")
+        user_properties = user.get_properties()
+        user_properties_values = get_properties_value(
+            properties=user_properties
+        )
+        rent = position.get_rent()
+        if len(user_properties) and user_properties_values > rent:
+            while user.money < rent:
+                user.sell_selected_properties(properties=user_properties)
+                user_properties = user.get_properties()
+            user.pay_rent(box=position)
+        else:
+            self.user_game_over(user=user, position=position)
 
-    def start_round(self):
-        print(f"Start Round {self.round_number}")
-
-    def start_user_round(self, user: UserPort):
-        print(f"User: {user.name}")
-        print(str(user))
+    def step_on_box(self, user: UserPort, position: BoxPortType):
+        if isinstance(position, RentOnlyBoxPort):
+            try:
+                position.step_on(user=user)
+            except user.CantAffordRentException:
+                self.handle_user_cant_afford_rent(position=position, user=user)
+        else:
+            position.step_on(user=user)
 
     def user_round(self, user: UserPort):
         self.start_user_round(user=user)
+        Actions.choose_action(user=user)
         new_index = self.scoreboard.get_new_index(
             user=user, initial_position=user.position
         )
         new_position = self.scoreboard.get_new_position(new_index=new_index)
         print("New Position!")
         print(str(new_position))
-        if new_position.owner is None:
-            if new_position.user_can_buy(user=user):
-                result = user.get_user_wants_to_buy(
-                    label=f"Do you want to buy {new_position.name}?"
-                )
-                if result:
-                    user.buy_property(box=new_position)
-        else:
-            if new_position.owner == user:
-                # TODO : Houses and Hotels part
-                pass
-            else:
-                print("You have to pay the rent")
-                try:
-                    user.pay_rent(box=new_position)
-                except user.CantAffordRentException:
-                    print("Ops! You don't have enough money!")
-                    user_properties = user.get_properties()
-                    user_properties_values = get_properties_value(
-                        properties=user_properties
-                    )
-                    rent = new_position.get_rent()
-                    if len(user_properties) and user_properties_values > rent:
-                        while user.money < rent:
-                            user.sell_selected_properties(
-                                properties=user_properties
-                            )
-                            user_properties = user.get_properties()
-                        user.pay_rent(box=new_position)
-                    else:
-                        self.user_game_over(user=user)
+        self.step_on_box(user=user, position=new_position)
 
     def round(self):
         for user in self.in_game_users:
@@ -104,84 +102,19 @@ class Monopoly:
             self.start_round()
             self.end_round()
 
+    def end(self):
+        ranking = deepcopy(self.ranking)
+        ranking.reverse()
+        print("Ranking:")
+        for index, (user, rounds) in enumerate(ranking, start=1):
+            rounds_label = str(rounds) if rounds else "WINNER"
+            print(f"{index}: {user.name} {rounds_label}")
+        print("Thanks for playing")
+
 
 def game(
     setupper: UsersSetupperPort, scoreboard: ScoreBoardPort, ruler: RulerPort
 ):
-    print("Start Monopoli")
-    users = setupper.users
-    round_number = 1
-    game_condition = True
-    ranking: list[tuple[UserPort, int | None]] = []
-    while game_condition:
-        print(f"Start Round {round_number}")
-        for user in users:
-            print(f"User: {user.name}")
-            print(str(user))
-            new_index = scoreboard.get_new_index(
-                user=user, initial_position=user.position
-            )
-            new_position = scoreboard.get_new_position(new_index=new_index)
-            print("New Position!")
-            print(str(new_position))
-            user.position = new_position
-            if new_position.owner is None:
-                if new_position.user_can_buy(user=user):
-                    result = user.get_user_wants_to_buy(
-                        label=f"Do you want to buy {new_position.name}?"
-                    )
-                    if result:
-                        user.buy_property(box=new_position)
-            else:
-                if new_position.owner == user:
-                    # TODO : Houses and Hotels part
-                    pass
-                else:
-                    print("You have to pay the rent")
-                    try:
-                        user.pay_rent(box=new_position)
-                    except user.CantAffordRentException:
-                        print("Ops! You don't have enough money!")
-                        user_properties = user.get_properties()
-                        user_properties_values = get_properties_value(
-                            properties=user_properties
-                        )
-                        rent = new_position.get_rent()
-                        if (
-                            len(user_properties)
-                            and user_properties_values > rent
-                        ):
-                            while user.money < rent:
-                                user.sell_selected_properties(
-                                    properties=user_properties
-                                )
-                                user_properties = user.get_properties()
-                            user.pay_rent(box=new_position)
-                        else:
-                            user.bankrupt()
-                            user.give_money(
-                                money=user.money,
-                                reciever=new_position.owner,
-                                silently=True,
-                            )
-                            print(
-                                f"User {user.name} gived all the money to {new_position.owner.name}"
-                            )
-                            users.remove(user)
-                            n_users = len(users)
-                            ranking.append((user, round_number))
-                            if n_users > 1:
-                                print(f"{len(users)} users left")
-                                continue
-                            else:
-                                ranking.append((users[0], None))
-                                game_condition = False
-                                break
-
-                        print("Choose the property")
-        round_number += 1
-    ranking.reverse()
-    print("Ranking:")
-    for index, (user, rounds) in enumerate(ranking, start=1):
-        rounds_label = str(rounds) if rounds else "WINNER"
-        print(f"{index}: {user.name} {rounds_label}")
+    game = Monopoly(setupper=setupper, scoreboard=scoreboard, ruler=ruler)
+    game.play()
+    game.end()

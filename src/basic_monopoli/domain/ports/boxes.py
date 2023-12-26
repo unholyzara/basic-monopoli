@@ -1,18 +1,19 @@
 import abc
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
-from .users import UserPort
 from .rulers import RulerPort
-from .scoreboards import ScoreBoardPort
+
+if TYPE_CHECKING:
+    from .scoreboards import ScoreBoardPort
+    from .users import UserPort
 
 
 @dataclass(kw_only=True)
 class BaseBoxPort(abc.ABC):
     name: str
-    index: int
-    scoreboard: ScoreBoardPort
+    scoreboard: "ScoreBoardPort"
     ruler: RulerPort
     group = None
     owner = None
@@ -21,13 +22,13 @@ class BaseBoxPort(abc.ABC):
         return self.name
 
     @abc.abstractmethod
-    def step_on(self, user: UserPort, ruler: RulerPort):
+    def step_on(self, user: "UserPort"):
         pass
 
-    def movement_step_on(self, user: UserPort, ruler: RulerPort):
+    def movement_step_on(self, user: "UserPort"):
         pass
 
-    def user_can_buy(self, user: UserPort):
+    def user_can_buy(self, user: "UserPort"):
         return False
 
 
@@ -37,10 +38,13 @@ class RentOnlyBoxPort(BaseBoxPort):
     def get_rent(self) -> float:
         pass
 
+    def step_on(self, user: "UserPort"):
+        user.pay_rent(box=self)
+
 
 @dataclass
 class PropertyBoxPort(RentOnlyBoxPort):
-    owner: Optional[UserPort] = None
+    owner: Optional["UserPort"] = None
     houses: int = 0
     hotels: int = 0
 
@@ -66,13 +70,13 @@ class PropertyBoxPort(RentOnlyBoxPort):
     def get_price(self) -> float:
         pass
 
-    def user_can_buy(self, user: UserPort):
+    def user_can_buy(self, user: "UserPort"):
         if self.owner is None:
             price = self.get_price()
             return price <= user.money
         return False
 
-    def handle_purchasable_property(self, user: UserPort):
+    def handle_purchasable_property(self, user: "UserPort"):
         if self.user_can_buy(user=user):
             result = user.get_user_wants_to_buy(
                 label=f"Do you want to buy {self.name}?"
@@ -84,7 +88,7 @@ class PropertyBoxPort(RentOnlyBoxPort):
         # TODO: Houses & Hotels
         pass
 
-    def step_on(self, user: UserPort, ruler: RulerPort):
+    def step_on(self, user: "UserPort"):
         user.position = self
         if self.owner is None:
             self.handle_purchasable_property(user=user)

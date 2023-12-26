@@ -1,7 +1,11 @@
-from typing import TypeVar
+from typing import TypeVar, TYPE_CHECKING
 
 from .displays import display_properties
-from ..ports.boxes import BoxPortType
+
+if TYPE_CHECKING:
+    from basic_monopoli.domain.ports.boxes import BoxPortType
+
+    T = TypeVar("T", bound=BoxPortType)
 
 YES = "Y"
 NO = "N"
@@ -26,13 +30,10 @@ def get_int_input(label: str) -> int:
         return users_number
 
 
-T = TypeVar("T", bound=BoxPortType)
-
-
 def select_properties(
-    properties: list[T],
+    properties: list["T"],
     message: str = "Select properties (1,2,3,...): ",
-) -> list[T]:
+) -> list["T"]:
     display_properties(properties=properties)
     result_str = input(message)
     result = result_str.split(",")
@@ -48,6 +49,20 @@ def select_properties(
             )
         except IndexError:
             print("Add a correct list of indexes")
-            return select_properties(properties=properties)
+            return select_properties(properties=properties, message=message)
         else:
             return selected_properties
+
+
+def select_property(
+    properties: list["T"], message: str = "Select property: "
+) -> "T":
+    display_properties(properties=properties)
+    index = get_int_input(label=message)
+    try:
+        selected_property = properties[index]
+    except IndexError:
+        print("Add a correct number")
+        return select_property(properties=properties, message=message)
+    else:
+        return selected_property
