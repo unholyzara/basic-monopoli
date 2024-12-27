@@ -35,8 +35,7 @@ class BaseBoxPort(abc.ABC):
 @dataclass
 class PropertyBoxPort(BaseBoxPort):
     owner: Optional["UserPort"] = None
-    houses: int = 0
-    hotels: int = 0
+    level: int = 1
 
     class MaximumHouseNumberReachedException(Exception):
         pass
@@ -51,8 +50,7 @@ class PropertyBoxPort(BaseBoxPort):
             f"Owner: {owner}",
             f"Price: {self.get_price()}",
             f"Rent: {self.get_rent()}",
-            f"Houses: {self.houses}",
-            f"Hotels: {self.hotels}",
+            f"Level: {self.level}",
         ]
         return " | ".join(label_ls)
 
@@ -91,6 +89,8 @@ class PropertyBoxPort(BaseBoxPort):
                 self.handle_owned_property()
             else:
                 user.pay_rent(box=self)
+        if self.level < 5:
+            self.level += 1
 
 
 BoxPortType = BaseBoxPort | PropertyBoxPort

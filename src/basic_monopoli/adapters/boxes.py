@@ -60,9 +60,6 @@ class BasicPropertyBox(PropertyBoxPort):
     def get_base_rent(self) -> float:
         return self.box_type.value * 75
 
-    def get_base_price(self) -> float:
-        return self.box_type.value * 150
-
     def get_house_price(self) -> float:
         return self.box_type.value * 35
 
@@ -71,19 +68,11 @@ class BasicPropertyBox(PropertyBoxPort):
 
     def get_rent(self):
         rent = self.get_base_rent()
-        house_price = self.get_house_price()
-        hotel_price = self.get_hotel_price()
-        rent += self.houses * (house_price / 4)
-        rent += self.hotels * (hotel_price / 4)
+        rent += self.level * (rent / 4)
         return rent
 
     def get_price(self):
-        price = self.get_base_price()
-        house_price = self.get_house_price()
-        hotel_price = self.get_hotel_price()
-        price += self.houses * (house_price * 1.2)
-        price += self.hotels * (hotel_price * 1.5)
-        return price
+        return self.box_type.value * 150
 
 
 @dataclass(kw_only=True)

@@ -3,7 +3,6 @@ import time, abc
 from typing import Optional, Any, TYPE_CHECKING
 
 from ..actions import Actions
-from ..models.buildings import Building
 from ..utils.boxes import get_properties_value
 from ..utils.displays import display_properties
 from .boxes import PropertyBoxPort, BoxPortType
@@ -55,12 +54,6 @@ class UserPort(abc.ABC):
 
     @abc.abstractmethod
     def get_user_wants_to_buy(self, label: str) -> bool:
-        pass
-
-    @abc.abstractmethod
-    def get_user_wants_to_buy_building(
-        self, position: PropertyBoxPort, building: Building
-    ) -> bool:
         pass
 
     @abc.abstractmethod
@@ -149,8 +142,6 @@ class UserPort(abc.ABC):
         if box.owner != self:
             raise self.PropertyNotOwnedException()
         box_value = box.get_price()
-        box.houses = 0
-        box.hotels = 0
         box.owner = None
         self.recieve_money(money=box_value, silently=True)
         return box_value

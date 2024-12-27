@@ -6,7 +6,6 @@ from typing import ClassVar, Any
 
 from basic_monopoli.domain.actions import Actions
 from basic_monopoli.domain.utils.inputs import get_yes_no_inpout
-from basic_monopoli.domain.models.buildings import Building
 from basic_monopoli.domain.utils.inputs import select_properties
 from basic_monopoli.domain.ports.users import UserPort
 from basic_monopoli.domain.ports.boxes import BoxPortType, PropertyBoxPort
@@ -60,19 +59,6 @@ class HumanUser(BaseUser):
     def get_user_wants_to_buy(self, label: str):
         return get_yes_no_inpout(label=label)
 
-    def get_user_wants_to_buy_building(
-        self, position: PropertyBoxPort, building: Building
-    ):
-        if building == Building.HOUSE:
-            number = position.houses
-            name = "house"
-        else:
-            number = position.hotels
-            name = "hotel"
-        return get_yes_no_inpout(
-            label=f"Do you want to buy a new {name}? Now {number}"
-        )
-
     def get_if_user_is_sure(self, label: str):
         return get_yes_no_inpout(label=label)
 
@@ -91,11 +77,6 @@ class PcUser(BaseUser):
         return f"PC {self.user_number}"
 
     def get_user_wants_to_buy(self, label: str):
-        return True
-
-    def get_user_wants_to_buy_building(
-        self, position: PropertyBoxPort, building: Building
-    ):
         return True
 
     def get_if_user_is_sure(self, label: str):
