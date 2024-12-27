@@ -10,7 +10,6 @@ from .boxes import (
     StartingBox,
     PropertyBox,
     ProbabilityBox,
-    ChanceBox,
     PrisonBox,
     StepOnlyBox,
 )
@@ -75,7 +74,6 @@ class StandardScoreBoard(SimpleScoreBoard):
             scoreboard=self,
             ruler=self.ruler,
         )
-        yield ChanceBox(scoreboard=self, ruler=self.ruler)
         yield PropertyBox(
             group=group,
             name="Viale Monterosa",
@@ -176,7 +174,6 @@ class StandardScoreBoard(SimpleScoreBoard):
             scoreboard=self,
             ruler=self.ruler,
         )
-        yield ChanceBox(scoreboard=self, ruler=self.ruler)
         yield PropertyBox(
             group=group,
             name="Corso Magellano",
@@ -267,7 +264,6 @@ class StandardScoreBoard(SimpleScoreBoard):
 
     def get_purple_group(self):
         group = PropertyBoxGroup(name="Purple", color="purple")
-        yield ChanceBox(scoreboard=self, ruler=self.ruler)
         yield PropertyBox(
             group=group,
             name="£Viale dei Giardini",
