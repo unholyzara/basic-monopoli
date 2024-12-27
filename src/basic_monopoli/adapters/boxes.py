@@ -1,14 +1,9 @@
 from enum import Enum
 from dataclasses import dataclass
-from typing import Literal
 
 from basic_monopoli.domain.models.groups import PropertyBoxGroup
 from basic_monopoli.domain.ports.users import UserPort
-from basic_monopoli.domain.ports.boxes import (
-    BaseBoxPort,
-    RentOnlyBoxPort,
-    PropertyBoxPort,
-)
+from basic_monopoli.domain.ports.boxes import BaseBoxPort, PropertyBoxPort
 
 
 @dataclass
@@ -51,14 +46,6 @@ class PrisonBox(BaseBoxPort):
 
     def step_on(self, user: UserPort):
         pass
-
-
-@dataclass
-class RentOnlyBox(RentOnlyBoxPort):
-    base_rent: float
-
-    def get_rent(self) -> float:
-        return self.base_rent
 
 
 @dataclass(kw_only=True)
@@ -132,19 +119,3 @@ class PropertyBox(PropertyBoxPort):
             if self.group_is_owned:
                 rent *= self.ruler.get_group_owned_multiplier()
         return rent
-
-
-class MultipliedPropertyBox(PropertyBox):
-    def get_rent(self) -> float:
-        if self.owner:
-            base_rent = self.base_rent
-            return base_rent * len(self.same_group_owned)
-        else:
-            return 0.0
-
-
-class StationBox(MultipliedPropertyBox):
-    name: Literal["Nord", "Sud", "Est", "Oves"]
-
-    def __post_init__(self):
-        self.name = "Stazione " + self.name  # type: ignore

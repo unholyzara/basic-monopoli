@@ -33,17 +33,7 @@ class BaseBoxPort(abc.ABC):
 
 
 @dataclass
-class RentOnlyBoxPort(BaseBoxPort):
-    @abc.abstractmethod
-    def get_rent(self) -> float:
-        pass
-
-    def step_on(self, user: "UserPort"):
-        user.pay_rent(box=self)
-
-
-@dataclass
-class PropertyBoxPort(RentOnlyBoxPort):
+class PropertyBoxPort(BaseBoxPort):
     owner: Optional["UserPort"] = None
     houses: int = 0
     hotels: int = 0
@@ -65,6 +55,10 @@ class PropertyBoxPort(RentOnlyBoxPort):
             f"Hotels: {self.hotels}",
         ]
         return " | ".join(label_ls)
+
+    @abc.abstractmethod
+    def get_rent(self) -> float:
+        pass
 
     @abc.abstractmethod
     def get_price(self) -> float:
@@ -99,4 +93,4 @@ class PropertyBoxPort(RentOnlyBoxPort):
                 user.pay_rent(box=self)
 
 
-BoxPortType = BaseBoxPort | RentOnlyBoxPort | PropertyBoxPort
+BoxPortType = BaseBoxPort | PropertyBoxPort

@@ -5,7 +5,11 @@ from .ports.users import UserPort
 from .ports.scoreboards import ScoreBoardPort
 from .ports.users_setuppers import UsersSetupperPort
 from .ports.rulers import RulerPort
-from .ports.boxes import BoxPortType, BaseBoxPort, RentOnlyBoxPort
+from .ports.boxes import (
+    BoxPortType,
+    BaseBoxPort,
+    PropertyBoxPort,
+)
 from .utils.boxes import get_properties_value
 
 
@@ -55,7 +59,7 @@ class Monopoly:
         self.remove_user(user=user)
 
     def handle_user_cant_afford_rent(
-        self, position: RentOnlyBoxPort, user: UserPort
+        self, position: PropertyBoxPort, user: UserPort
     ):
         print("Ops! You don't have enough money!")
         user_properties = user.get_properties(scoreboard=self.scoreboard)
@@ -74,7 +78,7 @@ class Monopoly:
             self.user_game_over(user=user, position=position)
 
     def step_on_box(self, user: UserPort, position: BoxPortType):
-        if isinstance(position, RentOnlyBoxPort):
+        if isinstance(position, PropertyBoxPort):
             try:
                 position.step_on(user=user)
             except user.CantAffordRentException:

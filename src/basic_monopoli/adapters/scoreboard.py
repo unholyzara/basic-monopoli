@@ -11,10 +11,7 @@ from .boxes import (
     PropertyBox,
     ProbabilityBox,
     ChanceBox,
-    RentOnlyBox,
-    StationBox,
     PrisonBox,
-    MultipliedPropertyBox,
     StepOnlyBox,
 )
 
@@ -42,59 +39,6 @@ class SimpleScoreBoard(ScoreBoardPort):
 
 @dataclass
 class StandardScoreBoard(SimpleScoreBoard):
-    def __post_init__(self):
-        self.stations = self.get_stations()
-        self.societies = self.get_societies()
-        super().__post_init__()
-
-    def get_stations(self):
-        @dataclass
-        class Stations:
-            sud: StationBox
-            ovest: StationBox
-            nord: StationBox
-            est: StationBox
-
-        group = PropertyBoxGroup(name="Stations", color="white")
-        stations: list[StationBox] = []
-        cardinals = ["sud", "ovest", "nord", "est"]
-        for cardinal in cardinals:
-            station = StationBox(
-                name=cardinal.capitalize(),
-                scoreboard=self,
-                ruler=self.ruler,
-                group=group,
-                base_rent=60,
-                base_price=120,
-                house_price=0,
-                hotel_price=0,
-            )
-            stations.append(station)
-        return Stations(*stations)
-
-    def get_societies(self):
-        @dataclass
-        class Sociecies:
-            electric: MultipliedPropertyBox
-            water: MultipliedPropertyBox
-
-        group = PropertyBoxGroup(name="Societies", color="white")
-        societies: list[MultipliedPropertyBox] = []
-        societies_names = ["Società elettrica", "Società Acqua Potabile"]
-        for society_name in societies_names:
-            society = StationBox(
-                name=society_name,
-                scoreboard=self,
-                ruler=self.ruler,
-                group=group,
-                base_rent=60,
-                base_price=120,
-                house_price=0,
-                hotel_price=0,
-            )
-            societies.append(society)
-        return Sociecies(*societies)
-
     def get_pink_group(self):
         group = PropertyBoxGroup(name="Pink", color="pink")
         yield PropertyBox(
@@ -115,12 +59,6 @@ class StandardScoreBoard(SimpleScoreBoard):
             base_price=60,
             house_price=50,
             hotel_price=75,
-            scoreboard=self,
-            ruler=self.ruler,
-        )
-        yield RentOnlyBox(
-            name="Tassa patrimoniale",
-            base_rent=self.ruler.get_loop_reward() / 2,
             scoreboard=self,
             ruler=self.ruler,
         )
@@ -171,7 +109,6 @@ class StandardScoreBoard(SimpleScoreBoard):
             scoreboard=self,
             ruler=self.ruler,
         )
-        yield self.societies.electric
         yield PropertyBox(
             group=group,
             name="Corso Ateneo",
@@ -283,7 +220,6 @@ class StandardScoreBoard(SimpleScoreBoard):
             scoreboard=self,
             ruler=self.ruler,
         )
-        yield self.societies.water
         yield PropertyBox(
             group=group,
             name="Piazza Giulio Cesare",
@@ -342,12 +278,6 @@ class StandardScoreBoard(SimpleScoreBoard):
             scoreboard=self,
             ruler=self.ruler,
         )
-        yield RentOnlyBox(
-            name="Tassa di lusso",
-            base_rent=self.ruler.get_loop_reward(),
-            scoreboard=self,
-            ruler=self.ruler,
-        )
         yield PropertyBox(
             group=group,
             name="Parco della Vittoria",
@@ -361,22 +291,18 @@ class StandardScoreBoard(SimpleScoreBoard):
 
     def get_south_side(self):
         yield from self.get_pink_group()
-        yield self.stations.sud
         yield from self.get_light_blue_group()
 
     def get_west_side(self):
         yield from self.get_orange_group()
-        yield self.stations.ovest
         yield from self.get_brown_group()
 
     def get_north_side(self):
         yield from self.get_red_group()
-        yield self.stations.nord
         yield from self.get_yellow_group()
 
     def get_east_side(self):
         yield from self.get_green_group()
-        yield self.stations.est
         yield from self.get_purple_group()
 
     def get_boxes(self):

@@ -6,7 +6,7 @@ from ..actions import Actions
 from ..models.buildings import Building
 from ..utils.boxes import get_properties_value
 from ..utils.displays import display_properties
-from .boxes import PropertyBoxPort, BoxPortType, RentOnlyBoxPort
+from .boxes import PropertyBoxPort, BoxPortType
 
 if TYPE_CHECKING:
     from .scoreboards import ScoreBoardPort
@@ -113,7 +113,7 @@ class UserPort(abc.ABC):
         if not silently:
             print(message)
 
-    def pay_rent(self, box: RentOnlyBoxPort):
+    def pay_rent(self, box: PropertyBoxPort):
         if isinstance(box, PropertyBoxPort) and not box.owner:
             raise self.PropertyNotOwnedException()
         if box.owner == self:
