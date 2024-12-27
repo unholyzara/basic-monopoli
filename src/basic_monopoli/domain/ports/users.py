@@ -3,7 +3,7 @@ import time, abc
 from typing import Optional, Any, TYPE_CHECKING
 
 from ..actions import Actions
-from ..utils.boxes import get_properties_value
+from ..utils.properties import get_properties_value
 from ..utils.displays import display_properties
 from .boxes import PropertyBoxPort, BoxPortType
 

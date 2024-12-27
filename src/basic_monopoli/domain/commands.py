@@ -10,7 +10,7 @@ from .ports.boxes import (
     BaseBoxPort,
     PropertyBoxPort,
 )
-from .utils.boxes import get_properties_value
+from .utils.properties import get_properties_value
 
 
 @dataclass
